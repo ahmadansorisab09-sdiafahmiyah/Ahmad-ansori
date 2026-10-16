@@ -1,0 +1,6 @@
+{
+  "name": "Tugas Online SDI Al-Fahmiyah",
+  "description": "Learning Management System (LMS) SDI Al-Fahmiyah - Ceria Beriman: Belajar dengan Gembira, Berkarya dengan Ilmu, Berakhlak dengan Iman.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

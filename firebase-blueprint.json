@@ -1,0 +1,196 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile representing admin, teacher (guru), or student (siswa) at SDI Al-Fahmiyah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "username": { "type": "string", "maxLength": 50 },
+        "fullName": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "guru", "siswa"] },
+        "kelas": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["active", "pending", "disabled"] },
+        "email": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "fullName", "role", "status"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "Mata pelajaran Kelas 5 Fase C kurikulum SDI Al-Fahmiyah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 100 },
+        "code": { "type": "string", "maxLength": 30 },
+        "kelas": { "type": "string", "maxLength": 10 },
+        "fase": { "type": "string", "maxLength": 10 },
+        "semester": { "type": "string", "enum": ["1", "2", "Ganjil", "Genap"] },
+        "teacherName": { "type": "string", "maxLength": 100 },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "name", "kelas", "fase", "isActive"]
+    },
+    "LearningObjective": {
+      "title": "LearningObjective",
+      "description": "Tujuan Pembelajaran (TP) dan Capaian Pembelajaran (CP) per Mata Pelajaran",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "subjectName": { "type": "string", "maxLength": 100 },
+        "unitName": { "type": "string", "maxLength": 150 },
+        "code": { "type": "string", "maxLength": 30 },
+        "description": { "type": "string", "maxLength": 500 },
+        "semester": { "type": "string", "maxLength": 10 }
+      },
+      "required": ["id", "subjectId", "code", "description"]
+    },
+    "Question": {
+      "title": "Question",
+      "description": "Bank Soal formatif/sumatif dengan Taksonomi Bloom C1-C6 dan stimulus",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "subjectName": { "type": "string", "maxLength": 100 },
+        "tpId": { "type": "string", "maxLength": 64 },
+        "tpCode": { "type": "string", "maxLength": 30 },
+        "tpDescription": { "type": "string", "maxLength": 500 },
+        "bloomLevel": { "type": "string", "enum": ["C1", "C2", "C3", "C4", "C5", "C6"] },
+        "bloomReason": { "type": "string", "maxLength": 500 },
+        "topic": { "type": "string", "maxLength": 200 },
+        "stimulus": { "type": "string", "maxLength": 2000 },
+        "type": { "type": "string", "enum": ["pilihan_ganda", "pilihan_ganda_kompleks", "benar_salah", "menjodohkan", "isian_singkat", "uraian", "literasi", "numerasi", "proyek", "praktik"] },
+        "questionText": { "type": "string", "maxLength": 2000 },
+        "explanation": { "type": "string", "maxLength": 1500 },
+        "scoringRubric": { "type": "string", "maxLength": 1500 },
+        "maxScore": { "type": "number" },
+        "difficulty": { "type": "string", "enum": ["Mudah", "Sedang", "Sukar"] },
+        "createdBy": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "subjectId", "bloomLevel", "type", "questionText", "maxScore"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Tugas online, latihan soal, atau asesmen kelas 5",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 200 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "subjectName": { "type": "string", "maxLength": 100 },
+        "unit": { "type": "string", "maxLength": 150 },
+        "instructions": { "type": "string", "maxLength": 2000 },
+        "taskType": { "type": "string", "enum": ["latihan", "formatif", "sumatif", "proyek", "praktik"] },
+        "startDate": { "type": "string", "maxLength": 50 },
+        "dueDate": { "type": "string", "maxLength": 50 },
+        "durationMinutes": { "type": "number" },
+        "allowRetake": { "type": "boolean" },
+        "maxRetakes": { "type": "number" },
+        "allowLate": { "type": "boolean" },
+        "maxScore": { "type": "number" },
+        "isScorePublished": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["draft", "published", "closed"] },
+        "teacherId": { "type": "string", "maxLength": 128 },
+        "teacherName": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "title", "subjectId", "taskType", "status", "maxScore"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Pengumpulan hasil tugas dan penilaian oleh siswa dan guru",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "taskId": { "type": "string", "maxLength": 64 },
+        "taskTitle": { "type": "string", "maxLength": 200 },
+        "studentId": { "type": "string", "maxLength": 128 },
+        "studentName": { "type": "string", "maxLength": 100 },
+        "studentClass": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["draft", "submitted", "graded", "returned"] },
+        "submittedAt": { "type": "string", "maxLength": 50 },
+        "isLate": { "type": "boolean" },
+        "autoScore": { "type": "number" },
+        "manualScore": { "type": "number" },
+        "finalScore": { "type": "number" },
+        "feedback": { "type": "string", "maxLength": 2000 },
+        "gradedBy": { "type": "string", "maxLength": 100 },
+        "gradedAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "taskId", "studentId", "status"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Perpustakaan materi ajar, LKPD, dokumen, dan video",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 200 },
+        "subjectId": { "type": "string", "maxLength": 64 },
+        "subjectName": { "type": "string", "maxLength": 100 },
+        "type": { "type": "string", "enum": ["pdf", "lkpd", "video", "gambar", "proyek"] },
+        "contentUrl": { "type": "string", "maxLength": 1000 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "teacherName": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "title", "subjectId", "type"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Pengumuman dan pemberitahuan guru untuk siswa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 200 },
+        "content": { "type": "string", "maxLength": 2000 },
+        "authorName": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "enum": ["tugas", "jadwal", "nilai", "umum"] },
+        "createdAt": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["id", "title", "content", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile collection for auth users"
+    },
+    "/subjects/{subjectId}": {
+      "schema": { "$ref": "#/entities/Subject" },
+      "description": "Class 5 subjects curriculum configuration"
+    },
+    "/learningObjectives/{objectiveId}": {
+      "schema": { "$ref": "#/entities/LearningObjective" },
+      "description": "Learning objectives (TP/CP) per subject"
+    },
+    "/questionBank/{questionId}": {
+      "schema": { "$ref": "#/entities/Question" },
+      "description": "Educational question bank with Bloom taxonomy tags"
+    },
+    "/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Online assignments, tests, and assessments"
+    },
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Student task answers, uploads, and grading"
+    },
+    "/materials/{materialId}": {
+      "schema": { "$ref": "#/entities/Material" },
+      "description": "Materials and LKPD library"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "School and teacher announcements"
+    }
+  }
+}

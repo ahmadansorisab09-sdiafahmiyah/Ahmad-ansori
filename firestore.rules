@@ -1,0 +1,118 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "ansorisdi@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isTeacher() {
+      return isBootstrappedAdmin() || (
+        isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        getUserData().role in ['admin', 'guru'] &&
+        getUserData().status == 'active'
+      );
+    }
+
+    function isStudent() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        getUserData().role == 'siswa';
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isTeacher());
+      allow list: if isTeacher();
+      allow create: if isSignedIn() && (
+        request.auth.uid == userId &&
+        request.resource.data.id == userId &&
+        (
+          request.resource.data.role == 'siswa' ||
+          isBootstrappedAdmin()
+        )
+      );
+      allow update: if isBootstrappedAdmin() || (
+        isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.role == resource.data.role // Cannot elevate own role
+      );
+      allow delete: if isBootstrappedAdmin();
+    }
+
+    // ADMINS
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isBootstrappedAdmin();
+    }
+
+    // SUBJECTS (Mata Pelajaran)
+    match /subjects/{subjectId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // LEARNING OBJECTIVES (TP & CP)
+    match /learningObjectives/{objectiveId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // QUESTION BANK
+    match /questionBank/{questionId} {
+      allow read, write: if isTeacher();
+    }
+
+    // TASKS (Tugas & Asesmen)
+    match /tasks/{taskId} {
+      // Siswa can read published tasks, teachers can read all
+      allow read: if isTeacher() || (isSignedIn() && resource.data.status == 'published');
+      allow write: if isTeacher();
+    }
+
+    // SUBMISSIONS
+    match /submissions/{submissionId} {
+      // Students can only read and write their own submissions. Teachers can read and grade all.
+      allow read: if isTeacher() || (isSignedIn() && resource.data.studentId == request.auth.uid);
+      allow create: if isSignedIn() && (
+        isTeacher() ||
+        (request.resource.data.studentId == request.auth.uid)
+      );
+      allow update: if isTeacher() || (
+        isSignedIn() &&
+        resource.data.studentId == request.auth.uid &&
+        request.resource.data.studentId == request.auth.uid &&
+        (resource.data.status == 'draft' || resource.data.status == 'submitted')
+      );
+      allow delete: if isTeacher();
+    }
+
+    // MATERIALS
+    match /materials/{materialId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+
+    // ANNOUNCEMENTS
+    match /announcements/{announcementId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+  }
+}
